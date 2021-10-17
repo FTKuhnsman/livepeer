@@ -37,7 +37,7 @@ def getMetrics(url):
 #%%
     
 if __name__ == "__main__":
-healthy = True
+    healthy = True
     
     while True:
         metrics = getMetrics(url)
