@@ -13,7 +13,7 @@ from datetime import timedelta
 import subprocess
 import sys
 
-url = "http://chicago.ftkuhnsman.com:7935/metrics"
+url = "http://localhost:7935/metrics"
 
 def getMetrics(url):
     r = requests.get(url, verify=False)
@@ -53,7 +53,6 @@ if __name__ == "__main__":
             if int(metrics['livepeer_current_sessions_total']) == 0:
                 restartService()
                 waiting = False
-        else:
         
         time.sleep(5)
     
