@@ -14,13 +14,15 @@ from datetime import timedelta
 
 
 class Transcoder():
-    def __init__(self,ec2,t_id):
+    def __init__(self,ec2,t_id,URL):
         self.ec2 = ec2
         self.instance = ec2.Instance(t_id)
         self.min_uptime = 300
         self.t_id = t_id
         self.start_time = dt.now()
         self.min_stop_time = dt.now()
+        self.url = URL
+        self.seconds_transcoded = 0.0
     
     def refresh_instance(self):
         self.instance = ec2.Instance(self.t_id)
@@ -46,6 +48,7 @@ class Transcoder():
     def attempt_stop(self):
         check_uptime = False
         check_min_stop_time = False
+        check_streams = False
         print('total uptime is {} seconds'.format(str(self.uptime)))
         
         if self.uptime < self.min_uptime:
@@ -58,8 +61,19 @@ class Transcoder():
             print('{} minimum stop time has not been reached. {} seconds remain. try again later'.format(self.t_id,str(delta.seconds)))
         else:
             check_min_stop_time = True
-            
-        if check_uptime & check_min_stop_time:
+        
+        metrics = getMetrics(self.url)
+        if 'livepeer_transcode_time_seconds_count' in metrics.keys():
+            sec_t = metrics['livepeer_transcode_time_seconds_count']
+            print(sec_t)
+            if float(sec_t) > self.seconds_transcoded:
+                print('transcoder is still transcoding')
+                self.seconds_transcoded = sec_t
+            else:
+                check_streams = True
+        
+        
+        if check_uptime & check_min_stop_time & check_streams:
             self.stop()
     
     def reset_min_stop_time(self,seconds):
@@ -80,7 +94,7 @@ class Transcoder():
             delta = dt.now() - self.start_time
             return delta.seconds
 
-url = "http://155.138.233.22:7935/metrics"
+url = "http://localhost:7935/metrics"
 
 def getMetrics(url):
     r = requests.get(url, verify=False)
@@ -105,25 +119,26 @@ def getMetrics(url):
     
 if __name__ == "__main__":
     ec2 = boto3.resource('ec2')
-    t1 = Transcoder(ec2,'i-00c4e3933efe16cae')
-    #t2 = Transcoder(ec2,'i-093603d8e1cc88349')
+    t1 = Transcoder(ec2,'i-00c4e3933efe16cae','http://54.156.15.106:7935/metrics')
+    t2 = Transcoder(ec2,'i-093603d8e1cc88349','http://34.194.86.135:7935/metrics')
     
     while True:
         metrics = getMetrics(url)
         if 'livepeer_current_sessions_total' in metrics.keys():
             print(metrics['livepeer_current_sessions_total'])
             
-            if metrics['livepeer_current_sessions_total'] > 42:
+            if metrics['livepeer_current_sessions_total'] > 40:
                 t1.reset_min_stop_time()
                 if t1.state['Name'] == 'stopped':
                     t1.start()
-            '''        
-            if metrics['livepeer_current_sessions_total'] > 2:
+            if metrics['livepeer_current_sessions_total'] > 52:
                 t2.reset_min_stop_time()
                 if t2.state['Name'] == 'stopped':
                     t2.start()
-            '''
-        time.sleep(2)
+
+        time.sleep(5)
         
         if t1.state['Name'] == 'running':
             t1.attempt_stop()
+        if t2.state['Name'] == 'running':
+            t2.attempt_stop()
