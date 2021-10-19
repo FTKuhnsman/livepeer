@@ -127,16 +127,21 @@ if __name__ == "__main__":
         if 'livepeer_current_sessions_total' in metrics.keys():
             print(metrics['livepeer_current_sessions_total'])
             
-            if metrics['livepeer_current_sessions_total'] > 40:
+            with open('thresh.txt') as f:
+                t = f.read()
+            f.close()
+            ts = t.split('\n')
+            
+            if metrics['livepeer_current_sessions_total'] > int(ts[0]):
                 t1.reset_min_stop_time()
                 if t1.state['Name'] == 'stopped':
                     t1.start()
-            if metrics['livepeer_current_sessions_total'] > 52:
+            if metrics['livepeer_current_sessions_total'] > int(ts[1]):
                 t2.reset_min_stop_time()
                 if t2.state['Name'] == 'stopped':
                     t2.start()
 
-        time.sleep(5)
+        time.sleep(3)
         
         if t1.state['Name'] == 'running':
             t1.attempt_stop()
