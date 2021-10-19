@@ -62,16 +62,18 @@ class Transcoder():
         else:
             check_min_stop_time = True
         
-        metrics = getMetrics(self.url)
-        if 'livepeer_transcode_time_seconds_count' in metrics.keys():
-            sec_t = metrics['livepeer_transcode_time_seconds_count']
-            print(sec_t)
-            if float(sec_t) > self.seconds_transcoded:
-                print('transcoder is still transcoding')
-                self.seconds_transcoded = sec_t
-            else:
-                check_streams = True
-        
+        try:
+            metrics = getMetrics(self.url)
+            if 'livepeer_transcode_time_seconds_count' in metrics.keys():
+                sec_t = metrics['livepeer_transcode_time_seconds_count']
+                print(sec_t)
+                if float(sec_t) > self.seconds_transcoded:
+                    print('transcoder is still transcoding')
+                    self.seconds_transcoded = sec_t
+                else:
+                    check_streams = True
+        except:
+            print('cannot get metrics')
         
         if check_uptime & check_min_stop_time & check_streams:
             self.stop()
@@ -119,8 +121,8 @@ def getMetrics(url):
     
 if __name__ == "__main__":
     ec2 = boto3.resource('ec2')
-    t1 = Transcoder(ec2,'i-00c4e3933efe16cae','http://54.156.15.106:7935/metrics')
-    t2 = Transcoder(ec2,'i-093603d8e1cc88349','http://34.194.86.135:7935/metrics')
+    t1 = Transcoder(ec2,'i-014c83a7f386f9e6b','http://54.156.15.106:7935/metrics')
+    t2 = Transcoder(ec2,'i-00c4e3933efe16cae','http://34.194.86.135:7935/metrics')
     
     while True:
         metrics = getMetrics(url)
@@ -133,11 +135,11 @@ if __name__ == "__main__":
             ts = t.split('\n')
             
             if metrics['livepeer_current_sessions_total'] > int(ts[0]):
-                t1.reset_min_stop_time()
+                t1.reset_min_stop_time(30)
                 if t1.state['Name'] == 'stopped':
                     t1.start()
             if metrics['livepeer_current_sessions_total'] > int(ts[1]):
-                t2.reset_min_stop_time()
+                t2.reset_min_stop_time(30)
                 if t2.state['Name'] == 'stopped':
                     t2.start()
 
