@@ -68,10 +68,10 @@ if __name__ == "__main__":
                 if r.status_code == 200: registered = True
         except:
             print('orchestrtor is not running')
-            registered = False
             try:
                 if registered:
                     r = requests.post('http://{}:{}/'.format(ts[2],ts[3]), json={'command':'unregister','ipAddr':ts[1]})
+                    registered = False
             except:
                 pass
             
