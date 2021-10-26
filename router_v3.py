@@ -74,6 +74,7 @@ def always_on():
 global orchPool
 orchPool = Orchestrator.OrchestratorPool()
 #%%
+'''
 js1 = {'command':'register_orchestrator',
         'type':'physical',
         'ipAddr':'0.0.0.0',
@@ -92,9 +93,10 @@ met = {'command':'update_metrics',
 
 orchPool.register_orchestrator(js1)
 orchPool.register_orchestrator(js2)
+'''
 #%%
 if __name__ == "__main__":      
-    global KEEP_RUNNING
+    
     KEEP_RUNNING = True
     server_thread = Thread(target=http_server)
     alwayson_thread = Thread(target=always_on)
