@@ -55,7 +55,7 @@ def http_server():
     #global server
     global KEEP_RUNNING
     
-    httpd = HTTPServer(('localhost', 80), SimpleHTTPRequestHandler)
+    httpd = HTTPServer(('', 80), SimpleHTTPRequestHandler)
     while True:
         httpd.handle_request()
     
