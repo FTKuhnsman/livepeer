@@ -56,19 +56,12 @@ def http_server():
     global KEEP_RUNNING
     
     httpd = HTTPServer(('localhost', 80), SimpleHTTPRequestHandler)
-    while KEEP_RUNNING:
+    while True:
         httpd.handle_request()
     
     time.sleep(1)
     print('http server is done')
     
-def always_on():
-    global KEEP_RUNNING
-    print('running')
-    time.sleep(10)
-    print('stopped')
-    KEEP_RUNNING = False
-    requests.post('http://127.0.0.1:80/', json={})
     
 #%%
 global orchPool
@@ -99,12 +92,9 @@ if __name__ == "__main__":
     
     KEEP_RUNNING = True
     server_thread = Thread(target=http_server)
-    alwayson_thread = Thread(target=always_on)
-    #alwayson_thread.setDaemon(True)
+    server_thread.daemon = True
     server_thread.start()
-    alwayson_thread.start()
     
-    #server_thread.join()
-    #alwayson_thread.join()
+    server_thread.join()
     
     print('done')
