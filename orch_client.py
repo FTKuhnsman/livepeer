@@ -70,7 +70,8 @@ if __name__ == "__main__":
             print('orchestrtor is not running')
             registered = False
             try:
-                r = requests.post('http://{}:{}/'.format(ts[2],ts[3]), json={'command':'unregister','ipAddr':ts[1]})
+                if registered:
+                    r = requests.post('http://{}:{}/'.format(ts[2],ts[3]), json={'command':'unregister','ipAddr':ts[1]})
             except:
                 pass
             
