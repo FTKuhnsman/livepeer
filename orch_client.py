@@ -76,4 +76,4 @@ if __name__ == "__main__":
                 pass
             registered = False
             
-        time.sleep(3)
+        time.sleep(1)
