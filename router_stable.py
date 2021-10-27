@@ -28,7 +28,6 @@ class Router():
     def __init__(self, _orchPool):
         self.orchPool = _orchPool
         self.current_orch = None
-        self.table = iptc.Table('nat')
     
     def orchPoolHasPhysicalOrchs(self):
         if len(self.orchPool.physicalOrchestrators) > 0:
