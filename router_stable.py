@@ -50,7 +50,7 @@ class Router():
     
     def iptable_drop(self,orch):
         drop_orch = 'iptables -t nat -D PREROUTING -i enp1s0 -p tcp --dport 8935 -j DNAT --to {}'
-        
+        os.system(drop_orch.format(orch.ipAddr))
         print('flush iptables')
         time.sleep(1)
         
