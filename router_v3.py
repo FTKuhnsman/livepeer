@@ -13,7 +13,8 @@ from threading import Thread
 import time
 import requests
 import imp
-#import iptc
+import os
+import iptc
 
 import Orchestrator
 
@@ -39,8 +40,15 @@ class Router():
             print('already using the best orchestrator')
         else:
             self.current_orch = orch
-            print('update iptables')
-
+            self.iptable_flush()
+            self.iptable_add(orch)
+    
+    def iptable_flush(self):
+        iptc.Table('nat').chains[0].flush()
+        
+    def iptable_add(self,orch):
+        add_orch = 'iptables -t nat -A PREROUTING -i enp1s0 -p tcp --dport 8935 -j DNAT --to {}'
+        os.system(add_orch.format(orch.ipAddr))
         
     
         
@@ -87,8 +95,10 @@ def main():
         
         if len(availableOrchs) > 0:
             router.set_current_orch(availableOrchs[0])
+        else:
+            print('no orchestrators available')
             
-        time.sleep(2)
+        time.sleep(3)
 #%%
 global orchPool
 orchPool = Orchestrator.OrchestratorPool()
