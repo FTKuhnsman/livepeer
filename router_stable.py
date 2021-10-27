@@ -66,6 +66,7 @@ class Router():
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     global orchPool    
     global server
+    global router
     
     def do_GET(self):
         self.send_response(200)
@@ -77,7 +78,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         data = self.rfile.read(content_length)
         data_decoded = data.decode('utf-8')
         body = ast.literal_eval(data_decoded)
-        self.send_response(200)
+        if body['command'] == 'update_metrics' and not body['ipAddr'] in router.orchPool.orch_ips:
+            self.send_response(900)
+        else:
+            self.send_response(200)
         self.end_headers()
         response = BytesIO()
         response.write(b'This is POST request. ')

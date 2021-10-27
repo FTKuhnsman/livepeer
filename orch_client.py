@@ -58,7 +58,13 @@ if __name__ == "__main__":
                 print(metrics['livepeer_max_sessions_total'])
                 
                 r = requests.post('http://{}:{}/'.format(ts[2],ts[3]), json={'command':'update_metrics','ipAddr':ts[1], 'metrics':data})
-            
+                if r.status_code == 900:
+                    r = requests.post('http://{}:{}/'.format(ts[2],ts[3]), json={'command':'register_orchestrator',
+                                                                             'type':ts[4],
+                                                                             'ipAddr':ts[1],
+                                                                             'maxSessions':metrics['livepeer_max_sessions_total'],
+                                                                             'isDefault':ts[5]})
+                
             else:
                 r = requests.post('http://{}:{}/'.format(ts[2],ts[3]), json={'command':'register_orchestrator',
                                                                              'type':ts[4],

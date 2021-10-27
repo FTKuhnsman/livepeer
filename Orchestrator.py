@@ -18,6 +18,7 @@ class OrchestratorPool():
         self.ec2 = boto3.resource('ec2')
         self.physicalOrchestrators = []
         self.virtualOrchestrators = []
+        self.orch_ips = []
         
     def process_request(self, req):
         print(repr(req))
@@ -28,6 +29,16 @@ class OrchestratorPool():
             if req['command'] == 'unregister': self.unregister_orchestrator(req)
         else:
             print('empty request')
+    
+    def update_orch_ips(self):
+        ips = []
+        for orch in self.physicalOrchestrators:
+            ips.append(orch.ipAddr)
+        
+        for orch in self.virtualOrchestrators:
+            ips.append(orch.ipAddr)
+        
+        self.orch_ips = ips
     
     def register_orchestrator(self,data):
         print('register orchestrator')
@@ -41,6 +52,7 @@ class OrchestratorPool():
             self.virtualOrchestrators.append(orch)
         else:
             print('invalid orchestrator type')
+        self.update_orch_ips()
     
     def unregister_orchestrator(self,data):
         for orch in self.physicalOrchestrators:
