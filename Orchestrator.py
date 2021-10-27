@@ -34,22 +34,22 @@ class OrchestratorPool():
         print(data['type'])
         
         if data['type'] == 'physical':
-            orch = Orchestrator(data['ipAddr'],data['type'])
+            orch = Orchestrator(data['ipAddr'],data['type'],data['isDefault'],data['maxSessions'])
             self.physicalOrchestrators.append(orch)
         elif data['type'] == 'virtual':
-            orch = VirtualOrchestrator(data['ipAddr'],data['type'],ec2=self.ec2,t_id=data['t_id'])
+            orch = VirtualOrchestrator(data['ipAddr'],data['type'],data['maxSessions'],ec2=self.ec2,t_id=data['t_id'])
             self.virtualOrchestrators.append(orch)
         else:
             print('invalid orchestrator type')
     
     def unregister_orchestrator(self,data):
-        for i, orch in enumerate(self.physicalOrchestrators):
+        for orch in self.physicalOrchestrators:
             if orch.ipAddr == data['ipAddr']:
-                del self.physicalOrchestrators[i]
+                self.physicalOrchestrators.remove(orch)
         
-        for i, orch in enumerate(self.virtualOrchestrators):
+        for orch in self.virtualOrchestrators:
             if orch.ipAddr == data['ipAddr']:
-                del self.physicalOrchestrators[i]
+                self.physicalOrchestrators.remove(orch)
     
     def update_metrics(self, data):
         for orch in self.physicalOrchestrators:
@@ -60,22 +60,47 @@ class OrchestratorPool():
             if orch.ipAddr == data['ipAddr']:
                 orch.metrics = data['metrics']
                 
+    def get_available_orchs(self):
+        available_orchs = []
+        
+        for i, orch in enumerate(self.physicalOrchestrators):
+            maxSessions = orch.metrics['maxSessions']
+            currentSessions = orch.metrics['currentSessions']
+            if orch.isDefault == 'yes':
+                if maxSessions > 0 and currentSessions < maxSessions:
+                    available_orchs.append(orch)           
+
+        for i, orch in enumerate(self.physicalOrchestrators):
+            maxSessions = orch.metrics['maxSessions']
+            currentSessions = orch.metrics['currentSessions']
+            if maxSessions > 0 and currentSessions < maxSessions and orch.isDefault != 'yes':
+                available_orchs.append(orch)
+                
+        for i, orch in enumerate(self.virtualOrchestrators):
+            maxSessions = orch.metrics['maxSessions']
+            currentSessions = orch.metrics['currentSessions']
+            if maxSessions > 0 and currentSessions < maxSessions:
+                available_orchs.append(orch)
+                
+        return available_orchs
+                
                 
 class Orchestrator():
     
-    def __init__(self,_ipAddr, _type):
+    def __init__(self,_ipAddr, _type, _isDefault, _maxSessions):
         self.ipAddr = _ipAddr
         self.metricsUrl = 'http://{}:7935/metrics'.format(self.ipAddr)
         self.type = _type
+        self.isDefault = _isDefault
         self.metrics = {
-            'maxSessions':0,
+            'maxSessions':_maxSessions,
             'currentSessions':0
             }
     
 
 class VirtualOrchestrator(Orchestrator):
-    def __init__(self,_ipAddr, _type, ec2=None,t_id=None):
-        Orchestrator.__init__(self, _ipAddr, _type)
+    def __init__(self,_ipAddr, _type, _maxSessions, _isDefault=None, ec2=None,t_id=None):
+        Orchestrator.__init__(self, _ipAddr, _type, _isDefault, _maxSessions)
         self.ipAddr = _ipAddr
         self.metricsUrl = 'http://{}:7935/metrics'.format(self.ipAddr)
         self.ec2 = ec2
@@ -86,6 +111,7 @@ class VirtualOrchestrator(Orchestrator):
         self.min_stop_time = dt.now()
         self.seconds_transcoded = 0.0
         self.type = _type
+        self.isDefault = _isDefault
         if ec2 != None:
             self.is_ec2 = True
         else:

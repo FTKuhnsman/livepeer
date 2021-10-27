@@ -13,6 +13,7 @@ from threading import Thread
 import time
 import requests
 import imp
+#import iptc
 
 import Orchestrator
 
@@ -22,10 +23,26 @@ global body
 global KEEP_RUNNING
 KEEP_RUNNING = True
 
-class Server():
-    def __init__(self):
-        self.name = None
-        self.age = None
+class Router():
+    def __init__(self, _orchPool):
+        self.orchPool = _orchPool
+        self.current_orch = None
+    
+    def orchPoolHasPhysicalOrchs(self):
+        if len(self.orchPool.physicalOrchestrators) > 0:
+            return True
+        else:
+            return False
+        
+    def set_current_orch(self, orch):
+        if self.current_orch == orch:
+            print('already using the best orchestrator')
+        else:
+            self.current_orch = orch
+            print('update iptables')
+
+        
+    
         
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     global orchPool    
@@ -62,31 +79,53 @@ def http_server():
     time.sleep(1)
     print('http server is done')
     
-    
+def main():
+    global router
+    print('clear iptables')
+    while True:
+        availableOrchs = router.orchPool.get_available_orchs()
+        
+        if len(availableOrchs) > 0:
+            router.set_current_orch(availableOrchs[0])
+            
+        time.sleep(2)
 #%%
 global orchPool
 orchPool = Orchestrator.OrchestratorPool()
+
+global router
+router = Router(orchPool)
 #%%
-'''
+
 js1 = {'command':'register_orchestrator',
         'type':'physical',
-        'ipAddr':'0.0.0.0',
-        'maxSessions':'10'}
+        'ipAddr':'1.2.3.4',
+        'maxSessions':10,
+        'isDefault':'yes'}
 
 js2 = {'command':'register_orchestrator',
         'type':'virtual',
-        'ipAddr':'0.0.0.0',
-        'maxSessions':'10',
+        'ipAddr':'2.6.7.8',
+        'maxSessions':10,
         't_id':'i-014c83a7f386f9e6b'}
 
+js3 = {'command':'register_orchestrator',
+        'type':'physical',
+        'ipAddr':'3.2.3.4',
+        'maxSessions':10,
+        'isDefault':'no'}
+
 met = {'command':'update_metrics',
-        'ipAddr':'0.0.0.0',
-        'metrics':{'maxSessions':10, 'currentSessions':5}
+        'ipAddr':'1.2.3.4',
+        'metrics':{'maxSessions':10, 'currentSessions':8}
         }
 
 orchPool.register_orchestrator(js1)
 orchPool.register_orchestrator(js2)
-'''
+orchPool.register_orchestrator(js3)
+orchPool.update_metrics(met)
+
+
 #%%
 if __name__ == "__main__":      
     
@@ -95,6 +134,16 @@ if __name__ == "__main__":
     server_thread.daemon = True
     server_thread.start()
     
-    server_thread.join()
+    #server_thread.join()
     
-    print('done')
+    main_thread = Thread(target=main)
+    main_thread.start()
+
+
+        
+        
+        
+        
+        
+        
+        
