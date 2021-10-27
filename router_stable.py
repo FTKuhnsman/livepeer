@@ -44,6 +44,7 @@ class Router():
             self.iptable_add(orch)
     
     def iptable_flush(self):
+        imp.reload(iptc)
         table = iptc.Table('nat')
         chain = iptc.Chain(table,'PREROUTING')
         chain.flush()
