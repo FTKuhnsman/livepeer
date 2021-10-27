@@ -90,6 +90,7 @@ def http_server():
     print('http server is done')
     
 def main():
+    print('start router')
     global router
     router.iptable_flush()
     while True:
@@ -104,9 +105,11 @@ def main():
         time.sleep(3)
 
 global orchPool
+print('create orch pool')
 orchPool = Orchestrator.OrchestratorPool()
 
 global router
+print('create router')
 router = Router(orchPool)
 
 if __name__ == "__main__":      
