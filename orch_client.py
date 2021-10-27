@@ -6,10 +6,7 @@ Created on Tue Oct 26 17:47:10 2021
 """
 import requests
 import re
-import boto3
 import time
-from datetime import datetime as dt
-from datetime import timedelta
 import functools
 print = functools.partial(print, flush=True)
 
