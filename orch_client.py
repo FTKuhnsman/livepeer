@@ -72,8 +72,8 @@ if __name__ == "__main__":
             try:
                 if registered:
                     r = requests.post('http://{}:{}/'.format(ts[2],ts[3]), json={'command':'unregister','ipAddr':ts[1]})
-                    registered = False
             except:
                 pass
+            registered = False
             
         time.sleep(3)
