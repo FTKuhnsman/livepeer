@@ -111,7 +111,7 @@ def main():
         else:
             print('no orchestrators available')
             
-        time.sleep(3)
+        time.sleep(1)
 
 global orchPool
 print('create orch pool')
