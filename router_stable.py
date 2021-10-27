@@ -45,10 +45,12 @@ class Router():
     
     def iptable_flush(self):
         iptc.Table('nat').chains[0].flush()
+        print('flush iptables')
         
     def iptable_add(self,orch):
         add_orch = 'iptables -t nat -A PREROUTING -i enp1s0 -p tcp --dport 8935 -j DNAT --to {}'
         os.system(add_orch.format(orch.ipAddr))
+        print('add orch to iptables')
         
     
         
@@ -95,6 +97,7 @@ def main():
         
         if len(availableOrchs) > 0:
             router.set_current_orch(availableOrchs[0])
+            print('set current orchestrator')
         else:
             print('no orchestrators available')
             
