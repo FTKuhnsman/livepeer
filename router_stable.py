@@ -43,6 +43,11 @@ class Router():
             self.iptable_add(orch)
             self.current_orch = orch
     
+    def iptable_flush(self):
+        table = iptc.Table('nat')
+        chain = iptc.Chain(table,'PREROUTING')
+        chain.flush()
+    
     def iptable_drop(self,orch):
         drop_orch = 'iptables -t nat -D PREROUTING -i enp1s0 -p tcp --dport 8935 -j DNAT --to {}'
         
