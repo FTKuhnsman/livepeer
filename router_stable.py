@@ -39,7 +39,7 @@ class Router():
         if self.current_orch == orch:
             print('already using the best orchestrator')
         else:
-            self.iptable_drop(self.current_orch)
+            if self.current_orch() != None: self.iptable_drop(self.current_orch)
             self.iptable_add(orch)
             self.current_orch = orch
     
