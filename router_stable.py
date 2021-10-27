@@ -89,7 +89,7 @@ def http_server():
     
 def main():
     global router
-    print('clear iptables')
+    router.iptable_flush()
     while True:
         availableOrchs = router.orchPool.get_available_orchs()
         
