@@ -15,6 +15,9 @@ import requests
 import imp
 import os
 import iptc
+import sys
+import functools
+print = functools.partial(print, flush=True)
 
 import Orchestrator
 
@@ -39,7 +42,7 @@ class Router():
         if self.current_orch == orch:
             print('already using the best orchestrator')
         else:
-            if self.current_orch() != None: self.iptable_drop(self.current_orch)
+            if self.current_orch != None: self.iptable_drop(self.current_orch)
             self.iptable_add(orch)
             self.current_orch = orch
     
@@ -52,7 +55,6 @@ class Router():
         drop_orch = 'iptables -t nat -D PREROUTING -i enp1s0 -p tcp --dport 8935 -j DNAT --to {}'
         os.system(drop_orch.format(orch.ipAddr))
         print('flush iptables')
-        time.sleep(1)
         
     def iptable_add(self,orch):
         add_orch = 'iptables -t nat -A PREROUTING -i enp1s0 -p tcp --dport 8935 -j DNAT --to {}'
