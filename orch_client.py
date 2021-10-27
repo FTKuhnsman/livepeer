@@ -63,7 +63,8 @@ if __name__ == "__main__":
                 r = requests.post('http://{}:{}/'.format(ts[2],ts[3]), json={'command':'register_orchestrator',
                                                                              'type':ts[4],
                                                                              'ipAddr':ts[1],
-                                                                             'maxSessions':metrics['livepeer_max_sessions_total']})
+                                                                             'maxSessions':metrics['livepeer_max_sessions_total'],
+                                                                             'isDefault':ts[5]})
                 
                 if r.status_code == 200: registered = True
         except:
