@@ -39,15 +39,12 @@ class Router():
         if self.current_orch == orch:
             print('already using the best orchestrator')
         else:
-            self.current_orch = orch
-            self.iptable_flush()
+            self.iptable_drop(self.current_orch)
             self.iptable_add(orch)
+            self.current_orch = orch
     
-    def iptable_flush(self):
-        imp.reload(iptc)
-        table = iptc.Table('nat')
-        chain = iptc.Chain(table,'PREROUTING')
-        chain.flush()
+    def iptable_drop(self,orch):
+        drop_orch = 'iptables -t nat -D PREROUTING -i enp1s0 -p tcp --dport 8935 -j DNAT --to {}'
         
         print('flush iptables')
         time.sleep(1)
