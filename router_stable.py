@@ -28,6 +28,7 @@ class Router():
     def __init__(self, _orchPool):
         self.orchPool = _orchPool
         self.current_orch = None
+        self.table = iptc.Table('nat')
     
     def orchPoolHasPhysicalOrchs(self):
         if len(self.orchPool.physicalOrchestrators) > 0:
@@ -41,12 +42,15 @@ class Router():
         else:
             self.current_orch = orch
             self.iptable_flush()
-            time.sleep(1)
             self.iptable_add(orch)
     
     def iptable_flush(self):
-        iptc.Table('nat').chains[0].flush()
+        table = iptc.Table('nat')
+        chain = iptc.Chain(table,'PREROUTING')
+        chain.flush()
+        
         print('flush iptables')
+        time.sleep(1)
         
     def iptable_add(self,orch):
         add_orch = 'iptables -t nat -A PREROUTING -i enp1s0 -p tcp --dport 8935 -j DNAT --to {}'
