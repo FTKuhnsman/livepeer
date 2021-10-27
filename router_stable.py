@@ -41,6 +41,7 @@ class Router():
         else:
             self.current_orch = orch
             self.iptable_flush()
+            time.sleep(1)
             self.iptable_add(orch)
     
     def iptable_flush(self):
