@@ -33,7 +33,7 @@ def getMetrics(url):
     
 if __name__ == "__main__":
     
-    registered = False
+    registered = True
     
     with open('client_config') as f:
         t = f.read()
