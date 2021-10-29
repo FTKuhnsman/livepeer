@@ -110,7 +110,7 @@ def main():
         availableOrchs = router.orchPool.get_available_orchs()
         print("Available Orchestrators")
         for o in availableOrchs:
-            print("IP - {};  MaxSessions - {};  CurrentSessions - {}".format(o.ipAddr, o.metrics['maxSessions'], o.metrics['currentSessions'])
+            print("IP - {};  MaxSessions - {};  CurrentSessions - {}".format(o.ipAddr, o.metrics['maxSessions'], o.metrics['currentSessions']))
         
         if len(availableOrchs) > 0:
             router.set_current_orch(availableOrchs[0])
