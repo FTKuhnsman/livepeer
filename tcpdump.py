@@ -35,13 +35,12 @@ while True:
         if not any(s in spline[2] for s in ignore):
             #print(line)
             #print(size)
-            if not size == 0:
+            if size > 500:
                 spip = spline[2].split('.')
                 ip = '.'.join(spip[0:4])
                 now = dt.datetime.now()
                 dtstamp = now.strftime("%m/%d/%Y, %H:%M:%S")
-                if ip in ip_check:
-                    pass
+                if ip in ip_check: ip_list[ip]['LastSeen'] = dtstamp
                 else:
                     ip_check.append(ip)
                     
