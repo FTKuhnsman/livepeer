@@ -8,6 +8,7 @@ This is a temporary script file.
 import subprocess as sub
 import json
 import requests
+from pythonping import ping
 
 url = 'http://ipinfo.io/8.8.8.8'
 #response = requests.get(url)
@@ -29,13 +30,15 @@ while True:
             spip = spline[2].split('.')
             ip = '.'.join(spip[0:4])
             if not ip in ip_check:
-                
-                
+                ip_check.append(ip)
                 
                 url = 'http://ipinfo.io/{}'.format(ip)
                 response = requests.get(url)
                 rjs = response.json()
-                ip_check.append(ip)
-                ip_list.append({'IP':ip, 'City':rjs['city'],'Region':rjs['region'],'Country':rjs['country'], 'Org':rjs['org']})
+                
+                p = ping(ip,count=1)
+                lat = p.rtt_max * 1000
+                
+                ip_list.append({'IP':ip, 'Latency':lat, 'City':rjs['city'],'Region':rjs['region'],'Country':rjs['country'], 'Org':rjs['org']})
                 
                 print(ip_list[-1])
