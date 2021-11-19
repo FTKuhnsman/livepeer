@@ -38,7 +38,8 @@ while True:
                 
                 p = ping(ip,count=1)
                 lat = p.rtt_max * 1000
-                
-                ip_list.append({'IP':ip, 'Latency':lat, 'City':rjs['city'],'Region':rjs['region'],'Country':rjs['country'], 'Org':rjs['org']})
-                
+                try:
+                    ip_list.append({'IP':ip, 'Latency':lat, 'City':rjs['city'],'Region':rjs['region'],'Country':rjs['country'], 'Org':rjs['org']})
+                except:
+                    print('error adding IP')
                 print(ip_list[-1])
