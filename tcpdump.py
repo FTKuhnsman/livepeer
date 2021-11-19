@@ -12,9 +12,6 @@ from pythonping import ping
 import datetime as dt
 from pprint import pprint
 import os
-from IPython.display import clear_output
-import sys
-import threading
 import time
 
 ignore = ['192.168.0.28','47.205.87.4','127.0.0.1','45.76.61.64']
