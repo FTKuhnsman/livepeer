@@ -35,7 +35,7 @@ while True:
         if not any(s in spline[2] for s in ignore):
             #print(line)
             #print(size)
-            if size > 500:
+            if size > 1000:
                 spip = spline[2].split('.')
                 ip = '.'.join(spip[0:4])
                 now = dt.datetime.now()
