@@ -7,8 +7,7 @@ Created on Mon Mar 28 21:20:02 2022
 """
 
 import cv2
-import numpy as np
-import requests
+
 import sys
 
 print(sys.argv)
