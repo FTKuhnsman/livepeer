@@ -18,30 +18,19 @@ print(sys.argv)
 count = int(sys.argv[4])
 
 while True:
-    print('https://{}/stream/{}/480p/{}.ts'.format(str(sys.argv[1]),str(sys.argv[2]),str(count)))
-
-    cap = cv2.VideoCapture('https://{}/stream/{}/{}/{}.ts'.format(str(sys.argv[1]),str(sys.argv[2]),str(sys.argv[3]),str(count)))
-    
-    # Check if camera opened successfully
-    if (cap.isOpened()== False): 
-      print("Error opening video stream or file")
-      continue
-    
-    # Read until video is completed
-    while(cap.isOpened()):
-        ret, frame = cap.read()
-        if ret == True:
-    
-        # Display the resulting frame
-            cv2.imshow('Frame',frame)
-    
-        # Press Q on keyboard to  exit
-            if cv2.waitKey(25) & 0xFF == ord('q'):
-                break
-        else:
-            break
-    count += 1
-    print(count)
+    proc1 = sub.Popen(('sudo','tail','-f','/var/log/livepeer/livepeer.log'), stdout=sub.PIPE)
+    while go:
+        byte = proc1.stdout.readline()
+        line = byte.decode('utf-8')
+        spline = line.split(' ')
+        if '.ts' in spline[-1]:
+            parse = spline[-1].split('/')
+            print(parse[-3],parse[-2],parse[-1])
+            streams[parse[-3]] = {parse[-2]:parse[-1]}
+            '''
+            s = list(streams.keys())[0]
+            res = list(streams[s])['res']
+            '''
 cap.release()
 # When everything done, release the video capture object
 
