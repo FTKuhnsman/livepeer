@@ -15,12 +15,12 @@ print(sys.argv)
 
 # Create a VideoCapture object and read from input file
 # If the input is the camera, pass 0 instead of the video file name
-count = int(sys.argv[3])
+count = int(sys.argv[4])
 
 while True:
     print('https://{}/stream/{}/480p/{}.ts'.format(str(sys.argv[1]),str(sys.argv[2]),str(count)))
 
-    cap = cv2.VideoCapture('https://{}/stream/{}/480p/{}.ts'.format(str(sys.argv[1]),str(sys.argv[2]),str(count)))
+    cap = cv2.VideoCapture('https://{}/stream/{}/{}/{}.ts'.format(str(sys.argv[1]),str(sys.argv[2]),str(sys.argv[3]),str(count)))
     
     # Check if camera opened successfully
     if (cap.isOpened()== False): 
