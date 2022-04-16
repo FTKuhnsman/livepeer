@@ -7,10 +7,12 @@ TO DO:
 @author: ghost
 """
 import time
+import datetime
 import subprocess as sub
 import json
 
-streams = {'ip':'47.205.87.4'}
+streams = {'ip':'47.205.87.4', 'streams':{}}
+
 
 proc1 = sub.Popen(('sudo','tail','-f','/var/log/livepeer/livepeer.log'), stdout=sub.PIPE)
 while True:
@@ -20,12 +22,12 @@ while True:
     if '.ts' in spline[-1]:
         parse = spline[-1].split('/')
         print(parse[-3],parse[-2],parse[-1])
-        streams[parse[-3]] = {parse[-2]:parse[-1]}
-    time.sleep(.1)
+        print(line)
+        streams['streams'][parse[-3]] = {parse[-2]:parse[-1][:-1],'lastSeen':int(time.time())}
+    time.sleep(.2)
     
     with open('index.html', 'w') as f:
         js = json.dump(streams, f)
-
 
 
 
