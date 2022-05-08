@@ -14,7 +14,7 @@ from pprint import pprint
 import os
 import time
 
-ignore = ['192.168.0.28','47.205.87.4','127.0.0.1','45.76.61.64']
+ignore = []
 ip_list = {}
 ip_check = []
 
